@@ -1,0 +1,1 @@
+Adds a Filter to Jojo Content, which obfuscates Email addresses.

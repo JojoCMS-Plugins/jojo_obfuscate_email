@@ -1,0 +1,1 @@
+An output filter for obfuscating any emails left in the clear on the site. The javascript option uses Harvey's re-write approach, the unicode option is a trsight conversion into unicode which may only fool very stupid bots but has less overhead.
