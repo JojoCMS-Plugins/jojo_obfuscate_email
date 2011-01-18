@@ -20,7 +20,7 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
         if (!$obfuscationMethod || strpos($content, "@")===false) return $content;
     
         /* check for an Email Address in an <a> link */
-        $apattern = '~<a[^>]*mailto:([a-z0-9_.+-]+@[a-z0-9.]+[a-z0-9]{2,4})(.*)[^"]*>(.*?)</a>~i';
+        $apattern = '~<a[^>]*mailto:([a-z0-9_.+-]+@[a-z0-9.]+[a-z0-9]{2,4})(.*)[^"]*>([^<]*?)</a>~i';
         $pattern = "~[a-z0-9_.+-]+@[a-z0-9.]+[a-z0-9]{2,4}~i";
         $matches = array();
         preg_match_all($apattern, $content, $matches);
@@ -55,13 +55,14 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
                 $domainextension = implode('.', $domain);
                 $obfusc = "'" . $domainextension . "','" . $person. "','" . $domainname . "'";
  
-                $newtag = '<a href="' . $contacturl . '" onmouseover="this.href=xyz(' . $obfusc . ')' . ($emailextra ?  $emailextra : '') . ';" id ="obscuredadd' . $k . '">' . $contacttitle . '</a>' . "\n";
+                $newtag = '<a href="' . $contacturl . '" onmouseover="this.href=xyz(' . $obfusc . ')' . ($emailextra ?  $emailextra : '') . ';" id ="obscuredadd' . $k . '">' . $contacttitle . '</a>' ;
                 $script .= "$('#obscuredadd" . $k . "').html(xyz(" . $obfusc . ", false));" . "\n";
 
                 $content =  substr_replace($content, $newtag, $pos, strlen($match));
             }
             $script .= '});' . "\n" . '</script>' . "\n";
-            $content =  $content . $script;
+            $endpos = strpos($content, '</body>');
+            $content =  substr_replace($content, $script, $endpos, 0);
 
         } elseif($obfuscationMethod=="unicode") {
             foreach($matches[0] as $k=>$match)

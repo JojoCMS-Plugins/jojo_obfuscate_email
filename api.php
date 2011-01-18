@@ -15,7 +15,7 @@
 
  
 /* Add filter */
-Jojo::addFilter('content', 'obfuscateEmail', 'jojo_obfuscate_email');
+Jojo::addFilter('output', 'obfuscateEmail', 'jojo_obfuscate_email');
 
 
 /* Add Options */
