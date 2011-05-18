@@ -31,16 +31,22 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
             // work out the contact page to use when javascript isn't available
             if (class_exists('Jojo_Plugin_Jojo_contact')) {
                 global $page;
-                if (_MULTILANGUAGE) {
-                    $language = ($page->page['pg_language']) ? $page->page['pg_language'] : Jojo::getOption('multilanguage-default', 'en');
-                    $multilangstring = Jojo::getMultiLanguageString($language, false);
+                $contactpages = Jojo::selectQuery("SELECT pageid, pg_title, pg_url FROM {page} WHERE pg_link=?", array('jojo_plugin_jojo_contact'));
+                if (count($contactpages)==1) {
+                    $contactpage = $contactpages[0];
+                    $contacturl = Jojo::getPageUrlPrefix($contactpage['pageid']) . (!empty($contactpage['pg_url']) ? $contactpage['pg_url'] : $contactpage['pageid'] . '/' . Jojo::cleanURL($contactpage['pg_title'])) . '/';
+                     $contacttitle = htmlspecialchars($contactpage['pg_title'], ENT_COMPAT, 'UTF-8', false);
+                } elseif ($contactpages) {
+                    $thispageroot = Jojo::getSectionRoot($page->page['pageid']);
+                    foreach ($contactpages as $c) {
+                        if (Jojo::getSectionRoot($c['pageid'])==$thispageroot) {
+                            $contacturl = Jojo::getPageUrlPrefix($c['pageid']) . (!empty($c['pg_url']) ? $c['pg_url'] : $c['pageid'] . '/' . Jojo::cleanURL($c['pg_title'])) . '/';
+                            $contacttitle = htmlspecialchars($c['pg_title'], ENT_COMPAT, 'UTF-8', false);
+                            break;
+                        }
+                    }
                 }
-                $contactpage = Jojo::selectRow("SELECT pageid, pg_title, pg_url FROM {page} WHERE pg_link=?" . (_MULTILANGUAGE ? " AND pg_language = '$language' " : ''), array(strtolower('Jojo_Plugin_Jojo_contact')));
-                if ($contactpage) {
-                    $contacturl = (_MULTILANGUAGE ? $multilangstring : '') . (!empty($contactpage['pg_url']) ? $contactpage['pg_url'] : $contactpage['pageid'] . '/' . Jojo::cleanURL($contactpage['pg_title'])) . '/';
-                    $contacttitle = htmlspecialchars($contactpage['pg_title'], ENT_COMPAT, 'UTF-8', false);
-                }
-            }
+           }
             $script = '<script type="text/javascript" language="javascript">' . "\n";
             $script .= '$(document).ready(function(){' . "\n";
             foreach($matches[0] as $k=>$match)
