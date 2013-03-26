@@ -18,7 +18,7 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
     {
         $obfuscationMethod = Jojo::getOption('obfuscate_email_method', false);
         if (!$obfuscationMethod || strpos($content, "@")===false) return $content;
-    
+
         /* check for an Email Address in an <a> link */
         $apattern = '~<a[^>]*mailto:([a-z0-9_.+-]+@[a-z0-9.]+[a-z0-9]{2,4})(.*)[^"]*>([^<]*?)</a>~i';
         $pattern = "~[a-z0-9_.+-]+@[a-z0-9.]+[a-z0-9]{2,4}~i";
@@ -60,7 +60,7 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
                 $domainname = strrev(array_shift($domain));
                 $domainextension = implode('.', $domain);
                 $obfusc = "'" . $domainextension . "','" . $person. "','" . $domainname . "'";
- 
+
                 $newtag = '<a href="' . $contacturl . '" onmouseover="this.href=xyz(' . $obfusc . ')' . ($emailextra ?  $emailextra : '') . ';" id ="obscuredadd' . $k . '">' . $contacttitle . '</a>' ;
                 $script .= "$('#obscuredadd" . $k . "').html(xyz(" . $obfusc . ", false));" . "\n";
 
@@ -76,7 +76,7 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
                 $pos = strpos($content, $match);
                 $newtag = str_replace('mailto', self::string2unicode('mailto'), $match); //unicode mailto
                 $newtag = str_replace($matches[1][$k], self::string2unicode($matches[1][$k]), $newtag); // unicode linked email address
-                $newtag = strpos($newtag, '@')===false ?  str_replace($matches[2][$k], self::string2unicode($matches[2][$k]), $newtag) : $newtag; // unicode link text if it contains an email address 
+                $newtag = strpos($newtag, '@')===false ?  str_replace($matches[2][$k], self::string2unicode($matches[2][$k]), $newtag) : $newtag; // unicode link text if it contains an email address
                 $content =  substr_replace($content, $newtag, $pos, strlen($match)); // replace original <a> tag with unicoded version
             }
         } else {
@@ -85,7 +85,7 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
         return $content;
     }
 
-    public function string2unicode($input)
+    public static function string2unicode($input)
     {
         $output = "";
         $string = strval($input);
