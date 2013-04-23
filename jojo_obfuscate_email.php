@@ -86,7 +86,7 @@ class JOJO_Plugin_jojo_obfuscate_email extends JOJO_Plugin
         return $content;
     }
 
-    public function string2unicode($input)
+    public static function string2unicode($input)
     {
         $output = "";
         $string = strval($input);
